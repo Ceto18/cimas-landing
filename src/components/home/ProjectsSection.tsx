@@ -1,8 +1,65 @@
-import Image from 'next/image'
+import Image from "next/image";
+import Link from "next/link";
 
-import { projects } from '@/data/projects'
+import type {
+  Project,
+} from "@/types/project.types";
 
-export function ProjectsSection() {
+interface ProjectsSectionProps {
+  projects: Project[];
+}
+
+export function ProjectsSection({
+  projects,
+}: ProjectsSectionProps) {
+  const visibleProjects =
+    projects.slice(0, 4);
+
+  if (visibleProjects.length === 0) {
+    return (
+      <section
+        className="projects section"
+        id="proyectos"
+      >
+        <div className="container">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow light">
+                <span />
+                Experiencia
+              </p>
+
+              <h2>
+                Proyectos con impacto{" "}
+                <em>real.</em>
+              </h2>
+            </div>
+
+            <p className="section-note light-note">
+              Una muestra de la experiencia que ponemos al servicio de cada
+              desafío.
+            </p>
+          </div>
+
+          <div className="project-empty">
+            <p>
+              Actualmente no hay proyectos disponibles.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const [
+    featuredProject,
+    ...otherProjects
+  ] = visibleProjects;
+
+  const featuredImage =
+    featuredProject.photos?.[0]?.file_url ??
+    null;
+
   return (
     <section
       className="projects section"
@@ -17,7 +74,8 @@ export function ProjectsSection() {
             </p>
 
             <h2>
-              Proyectos con impacto <em>real.</em>
+              Proyectos con impacto{" "}
+              <em>real.</em>
             </h2>
           </div>
 
@@ -28,40 +86,92 @@ export function ProjectsSection() {
         </div>
 
         <div className="project-grid">
+          {/* PROYECTO DESTACADO */}
           <article className="project-feature">
             <div className="project-photo">
-              <Image
-                src="https://images.unsplash.com/photo-1517089535815-8f9f7c3b8f4f?auto=format&fit=crop&w=1600&q=85"
-                alt="Proyecto de infraestructura"
-                fill
-                sizes="(max-width: 900px) 100vw, 60vw"
-              />
+              {featuredImage ? (
+                <Image
+                  src={featuredImage}
+                  alt={featuredProject.title}
+                  fill
+                  sizes="(max-width: 900px) 100vw, 60vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-gray-800 text-sm text-white/60">
+                  Sin imagen
+                </div>
+              )}
             </div>
 
             <div className="project-caption">
-              <span>Infraestructura</span>
+              <span>
+                {featuredProject
+                  .type_project
+                  ?.name ??
+                  "Proyecto"}
+              </span>
 
-              <h3>Obras que conectan comunidades</h3>
+              <h3>
+                {
+                  featuredProject.title
+                }
+              </h3>
 
               <p>
-                Puentes, vías y espacios públicos pensados para durar.
+                {
+                  featuredProject.description
+                }
               </p>
             </div>
           </article>
 
+          {/* LISTADO DE PROYECTOS */}
           <div className="project-list">
-            {projects.map((project) => (
-              <article key={project.number}>
-                <span>{project.number}</span>
+            {otherProjects.map(
+              (
+                project,
+                index
+              ) => (
+                <article
+                  key={`${project.title}-${project.year}-${index}`}
+                >
+                  <span>
+                    {String(
+                      index + 2
+                    ).padStart(
+                      2,
+                      "0"
+                    )}
+                  </span>
 
-                <h3>{project.title}</h3>
+                  <h3>
+                    {
+                      project.title
+                    }
+                  </h3>
 
-                <p>{project.description}</p>
-              </article>
-            ))}
+                  <p>
+                    {
+                      project.description
+                    }
+                  </p>
+                </article>
+              )
+            )}
           </div>
+        </div>
+
+        {/* VER MÁS */}
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/proyectos"
+            className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/5 px-6 py-3 text-sm font-medium text-white transition duration-300 hover:border-white/60 hover:bg-white/10"
+          >
+            Ver más proyectos
+          </Link>
         </div>
       </div>
     </section>
-  )
+  );
 }

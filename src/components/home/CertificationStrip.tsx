@@ -1,8 +1,18 @@
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2 } from "lucide-react";
 
-import { certifications } from '@/data/certifications'
+import type { Certification } from "@/types/certification.types";
 
-export function CertificationStrip() {
+interface CertificationStripProps {
+  certifications: Certification[];
+}
+
+export function CertificationStrip({
+  certifications,
+}: CertificationStripProps) {
+  if (certifications.length === 0) {
+    return null;
+  }
+
   return (
     <section className="cert-strip">
       <div className="container cert-strip-inner">
@@ -13,14 +23,14 @@ export function CertificationStrip() {
         {certifications.map((certification) => (
           <a
             href="#certificaciones"
-            key={certification.code}
+            key={`${certification.name}-${certification.area}`}
           >
             <CheckCircle2 size={15} />
 
-            {certification.code}
+            {certification.name}
           </a>
         ))}
       </div>
     </section>
-  )
+  );
 }

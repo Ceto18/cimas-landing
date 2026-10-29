@@ -1,19 +1,48 @@
-import Image from 'next/image'
-import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react'
+import Image from "next/image";
 
-import { SITE_CONFIG } from '@/constants/site'
+import {
+  ArrowUpRight,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
+
+import { SITE_CONFIG } from "@/constants/site";
+
+import type {
+  Certification,
+} from "@/types/certification.types";
 
 const footerLinks = [
-  { label: 'Nosotros', href: '#nosotros' },
-  { label: 'Servicios', href: '#servicios' },
-  { label: 'Proyectos', href: '#proyectos' },
-  { label: 'Certificaciones', href: '#certificaciones' },
-]
+  {
+    label: "Nosotros",
+    href: "#nosotros",
+  },
+  {
+    label: "Servicios",
+    href: "#servicios",
+  },
+  {
+    label: "Proyectos",
+    href: "#proyectos",
+  },
+  {
+    label: "Certificaciones",
+    href: "#certificaciones",
+  },
+];
 
-export function Footer() {
+interface FooterProps {
+  certifications: Certification[];
+}
+
+export function Footer({
+  certifications,
+}: FooterProps) {
   return (
     <footer className="footer">
       <div className="container footer-top">
+        {/* MARCA */}
         <div className="footer-brand-column">
           <a
             href="#inicio"
@@ -34,36 +63,62 @@ export function Footer() {
             responsabilidad y compromiso con cada proyecto.
           </p>
 
-          <a className="footer-cta" href="#contacto">
+          <a
+            className="footer-cta"
+            href="#contacto"
+          >
             Conversemos sobre tu proyecto
+
             <ArrowUpRight size={16} />
           </a>
         </div>
 
+        {/* NAVEGACIÓN */}
         <div className="footer-column">
-          <p className="footer-heading">Navegación</p>
+          <p className="footer-heading">
+            Navegación
+          </p>
 
-          <nav className="footer-links" aria-label="Navegación del footer">
+          <nav
+            className="footer-links"
+            aria-label="Navegación del footer"
+          >
             {footerLinks.map((link) => (
-              <a key={link.href} href={link.href}>
+              <a
+                key={link.href}
+                href={link.href}
+              >
                 {link.label}
               </a>
             ))}
           </nav>
         </div>
 
+        {/* CONTACTO */}
         <div className="footer-column">
-          <p className="footer-heading">Contacto</p>
+          <p className="footer-heading">
+            Contacto
+          </p>
 
           <div className="footer-contact-list">
-            <a href={`mailto:${SITE_CONFIG.email}`}>
+            <a
+              href={`mailto:${SITE_CONFIG.email}`}
+            >
               <Mail size={16} />
-              <span>{SITE_CONFIG.email}</span>
+
+              <span>
+                {SITE_CONFIG.email}
+              </span>
             </a>
 
-            <a href={`tel:${SITE_CONFIG.phone}`}>
+            <a
+              href={`tel:${SITE_CONFIG.phone}`}
+            >
               <Phone size={16} />
-              <span>{SITE_CONFIG.phoneLabel}</span>
+
+              <span>
+                {SITE_CONFIG.phoneLabel}
+              </span>
             </a>
 
             <div>
@@ -71,22 +126,40 @@ export function Footer() {
 
               <span>
                 {SITE_CONFIG.address.street}
+
                 <br />
-                {SITE_CONFIG.address.city}, {SITE_CONFIG.address.region}
+
+                {SITE_CONFIG.address.city},{" "}
+                {SITE_CONFIG.address.region}
               </span>
             </div>
           </div>
         </div>
 
+        {/* CERTIFICACIONES */}
         <div className="footer-column">
-          <p className="footer-heading">Compromiso</p>
+          <p className="footer-heading">
+            Compromiso
+          </p>
 
-          <div className="footer-standards">
-            <span>ISO 9001</span>
-            <span>ISO 14001</span>
-            <span>ISO 45001</span>
-            <span>ISO 37001</span>
-          </div>
+          {certifications.length > 0 ? (
+            <div className="footer-standards">
+              {certifications.map(
+                (certification) => (
+                  <a
+                    key={`${certification.name}-${certification.area}`}
+                    href="#certificaciones"
+                  >
+                    {certification.name}
+                  </a>
+                )
+              )}
+            </div>
+          ) : (
+            <p className="footer-ruc">
+              Certificaciones en actualización
+            </p>
+          )}
 
           <p className="footer-ruc">
             RUC {SITE_CONFIG.ruc}
@@ -94,6 +167,7 @@ export function Footer() {
         </div>
       </div>
 
+      {/* PARTE INFERIOR */}
       <div className="container footer-bottom">
         <span>
           © 2026 {SITE_CONFIG.name}
@@ -104,5 +178,5 @@ export function Footer() {
         </span>
       </div>
     </footer>
-  )
+  );
 }

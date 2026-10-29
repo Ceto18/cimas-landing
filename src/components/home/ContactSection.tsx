@@ -3,11 +3,19 @@ import {
   Mail,
   MapPin,
   Phone,
-} from 'lucide-react'
+} from "lucide-react";
 
-import { SITE_CONFIG } from '@/constants/site'
+import { SITE_CONFIG } from "@/constants/site";
 
 export function ContactSection() {
+  const {
+    email,
+    phone,
+    phoneLabel,
+    address,
+    ruc,
+  } = SITE_CONFIG;
+
   return (
     <section
       className="contact section"
@@ -23,55 +31,73 @@ export function ContactSection() {
           <h2>
             Construyamos algo
             <br />
-            <strong>que perdure.</strong>
+            <strong>
+              que perdure.
+            </strong>
           </h2>
 
           <p className="contact-copy">
-            Cuéntanos sobre tu proyecto. Estamos listos para escucharte y
+            Cuéntanos sobre tu proyecto.
+            Estamos listos para escucharte y
             encontrar la mejor solución.
           </p>
         </div>
 
         <div className="contact-card">
-          <p>Contacto directo</p>
+          <p>
+            Contacto directo
+          </p>
 
-          <a href={`mailto:${SITE_CONFIG.email}`}>
+          {/* CORREO */}
+          <a
+            href={`mailto:${email}`}
+          >
             <Mail size={18} />
 
-            {SITE_CONFIG.email}
+            {email}
           </a>
 
-          <a href={`tel:${SITE_CONFIG.phone}`}>
+          {/* TELÉFONO */}
+          <a
+            href={`tel:${phone}`}
+          >
             <Phone size={18} />
 
-            {SITE_CONFIG.phoneLabel}
+            {phoneLabel}
           </a>
 
+          {/* DIRECCIÓN */}
           <div className="address">
             <MapPin size={18} />
 
             <p>
-              {SITE_CONFIG.address.street}
+              {address.street}
+
               <br />
 
-              {SITE_CONFIG.address.city}, {SITE_CONFIG.address.region},{' '}
-              {SITE_CONFIG.address.country}
+              {address.city},{" "}
+              {address.region},{" "}
+              {address.country}
+
               <br />
 
-              RUC {SITE_CONFIG.ruc}
+              RUC {ruc}
             </p>
           </div>
 
+          {/* BOTÓN */}
           <a
             className="button button-dark"
-            href={`mailto:${SITE_CONFIG.email}`}
+            href={`mailto:${email}`}
           >
             Escríbenos
 
-            <ArrowUpRight size={17} />
+            <ArrowUpRight
+              size={17}
+            />
           </a>
         </div>
       </div>
     </section>
-  )
+  );
 }

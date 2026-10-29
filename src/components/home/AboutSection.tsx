@@ -1,4 +1,33 @@
-export function AboutSection() {
+import type { Company } from "@/types/company.types";
+
+interface AboutSectionProps {
+  data: Company;
+}
+
+export function AboutSection({
+  data,
+}: AboutSectionProps) {
+  const orderedValues = [...data.values].sort(
+    (a, b) => a.position - b.position
+  );
+
+  const highlightedText =
+    "Compromiso y experiencia.";
+
+  const titleParts = data.title.includes(
+    highlightedText
+  )
+    ? data.title.split(highlightedText)
+    : [data.title];
+
+  const mainTitle =
+    titleParts[0]?.trim() ?? data.title;
+
+  const highlightedTitle =
+    data.title.includes(highlightedText)
+      ? highlightedText
+      : null;
+
   return (
     <section
       className="section intro"
@@ -12,22 +41,36 @@ export function AboutSection() {
           </p>
 
           <h2>
-            Capacidad técnica.
-            <br />
-            <strong>Compromiso humano.</strong>
+            {mainTitle}
+
+            {highlightedTitle && (
+              <>
+                <br />
+
+                <strong>
+                  {highlightedTitle}
+                </strong>
+              </>
+            )}
           </h2>
+
+          {orderedValues.length > 0 && (
+            <div className="mt-6 flex flex-wrap gap-2">
+              {orderedValues.map((value) => (
+                <span
+                  key={`${value.position}-${value.name}`}
+                  className="rounded-full border border-current px-3 py-1 text-sm"
+                >
+                  {value.name}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="intro-body">
           <p>
-            Somos una empresa peruana dedicada a la ingeniería, construcción y
-            consultoría. Integramos experiencia, planificación y control para
-            entregar resultados seguros, eficientes y sostenibles.
-          </p>
-
-          <p>
-            Trabajamos cerca de nuestros clientes, entendiendo cada necesidad y
-            acompañando el proyecto desde la idea hasta la puesta en operación.
+            {data.description}
           </p>
 
           <div className="mission-grid">
@@ -35,8 +78,7 @@ export function AboutSection() {
               <span>Misión</span>
 
               <p>
-                Brindar soluciones de ingeniería con excelencia,
-                responsabilidad y valor para nuestros clientes y comunidades.
+                {data.mission}
               </p>
             </div>
 
@@ -44,13 +86,12 @@ export function AboutSection() {
               <span>Visión</span>
 
               <p>
-                Ser referentes en la transformación responsable de la
-                infraestructura del Perú.
+                {data.vision}
               </p>
             </div>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

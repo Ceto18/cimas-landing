@@ -1,25 +1,76 @@
-import Image from 'next/image'
-import { ArrowUpRight, Menu } from 'lucide-react'
+"use client";
 
-import { SITE_CONFIG } from '@/constants/site'
+import Image from "next/image";
 
-const navigation = [
-  { label: 'Nosotros', href: '#nosotros' },
-  { label: 'Servicios', href: '#servicios' },
-  { label: 'Proyectos', href: '#proyectos' },
-  { label: 'Certificaciones', href: '#certificaciones' },
-]
+import {
+  ArrowUpRight,
+  Menu,
+} from "lucide-react";
+
+import {
+  usePathname,
+} from "next/navigation";
+
+import {
+  SITE_CONFIG,
+} from "@/constants/site";
 
 export function Navbar() {
+  const pathname =
+    usePathname();
+
+  const getHomeSectionHref = (
+    section: string
+  ) => {
+    if (pathname === "/") {
+      return `#${section}`;
+    }
+
+    return `/#${section}`;
+  };
+
+  const navigation = [
+    {
+      label: "Nosotros",
+      href: getHomeSectionHref(
+        "nosotros"
+      ),
+    },
+    {
+      label: "Servicios",
+      href: getHomeSectionHref(
+        "servicios"
+      ),
+    },
+    {
+      label: "Proyectos",
+      href: "/proyectos",
+    },
+    {
+      label: "Certificaciones",
+      href: getHomeSectionHref(
+        "certificaciones"
+      ),
+    },
+  ];
+
   return (
     <nav
-      className="nav container"
+      className="nav nav-fixed container"
       aria-label="Navegación principal"
     >
-      <a href="#inicio" aria-label="Ir al inicio">
+      {/* LOGO */}
+      <a
+        href="/"
+        aria-label="Ir al inicio"
+      >
         <Image
-          src={SITE_CONFIG.logo.negative}
-          alt={SITE_CONFIG.shortName}
+          src={
+            SITE_CONFIG.logo.negative
+          }
+          alt={
+            SITE_CONFIG.shortName
+          }
           width={210}
           height={70}
           className="brand-logo"
@@ -27,26 +78,50 @@ export function Navbar() {
         />
       </a>
 
+      {/* NAVEGACIÓN */}
       <div className="nav-links">
-        {navigation.map((item) => (
-          <a key={item.href} href={item.href}>
-            {item.label}
-          </a>
-        ))}
+        {navigation.map(
+          (item) => (
+            <a
+              key={
+                item.label
+              }
+              href={
+                item.href
+              }
+            >
+              {
+                item.label
+              }
+            </a>
+          )
+        )}
       </div>
 
-      <a className="nav-cta" href="#contacto">
+      {/* CTA */}
+      <a
+        className="nav-cta"
+        href={getHomeSectionHref(
+          "contacto"
+        )}
+      >
         Hablemos
-        <ArrowUpRight size={16} />
+
+        <ArrowUpRight
+          size={16}
+        />
       </a>
 
+      {/* MENÚ MÓVIL */}
       <button
         className="menu-button"
         type="button"
-        aria-label="Abrir menú"
+        aria-label="Abrir menú de navegación"
       >
-        <Menu size={22} />
+        <Menu
+          size={22}
+        />
       </button>
     </nav>
-  )
+  );
 }

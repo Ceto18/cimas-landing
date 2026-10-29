@@ -1,20 +1,41 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from "lucide-react";
+
+import type { Home } from "@/types/home.types";
 
 interface HeroSectionProps {
-  children?: ReactNode
+  data: Home;
+  children?: ReactNode;
 }
 
-export function HeroSection({ children }: HeroSectionProps) {
+export function HeroSection({
+  data,
+  children,
+}: HeroSectionProps) {
+  const heroImage =
+    data.images?.[0]?.file_url ?? null;
+
   return (
-    <section className="hero" id="inicio">
+    <section
+      className="hero"
+      id="inicio"
+    >
       {children}
 
       <div
         className="hero-media"
         role="img"
         aria-label="Imagen referencial de una obra de ingeniería"
+        style={
+          heroImage
+            ? {
+                backgroundImage: `url(${heroImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }
+            : undefined
+        }
       >
         <div className="hero-overlay" />
       </div>
@@ -27,12 +48,13 @@ export function HeroSection({ children }: HeroSectionProps) {
           </p>
 
           <h1>
-            Ingeniería que <em>construye</em> confianza.
+            Ingeniería que{" "}
+            <em>construye</em>{" "}
+            confianza.
           </h1>
 
           <p className="hero-text">
-            Diseñamos y ejecutamos soluciones para transformar retos complejos
-            en infraestructura que perdura.
+            {data.subtitle}
           </p>
 
           <div className="hero-actions">
@@ -41,6 +63,7 @@ export function HeroSection({ children }: HeroSectionProps) {
               href="#servicios"
             >
               Conoce nuestros servicios
+
               <ArrowUpRight size={17} />
             </a>
 
@@ -65,12 +88,14 @@ export function HeroSection({ children }: HeroSectionProps) {
       </div>
 
       <div className="hero-footer container">
-        <span>Huaraz · Áncash · Perú</span>
+        <span>
+          Huaraz · Áncash · Perú
+        </span>
 
         <a href="#nosotros">
           Explora nuestra experiencia ↓
         </a>
       </div>
     </section>
-  )
+  );
 }

@@ -1527,12 +1527,41 @@ h2 strong {
 
   /* SERVICES */
 
-  .service-grid,
-  .cert-grid {
-    grid-template-columns: 1fr;
 
-    gap: 15px;
+  .service-carousel {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 0.5rem;
+}
+
+.service-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.service-carousel .service-card {
+  flex: 0 0 calc((100% - 3rem) / 3);
+  scroll-snap-align: start;
+}
+
+@media (max-width: 1024px) {
+  .service-carousel .service-card {
+    flex: 0 0 calc((100% - 1.5rem) / 2);
   }
+}
+
+@media (max-width: 640px) {
+  .service-carousel {
+    gap: 1rem;
+  }
+
+  .service-carousel .service-card {
+    flex: 0 0 88%;
+  }
+}
 
   .service-image {
     height: 190px;
