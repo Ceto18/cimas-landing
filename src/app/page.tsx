@@ -16,6 +16,7 @@ import { getCertifications } from "@/services/certifications.service";
 import { getHome } from "@/services/home.service";
 import { getProjects } from "@/services/projects.service";
 import { getServices } from "@/services/services.service";
+import { getSocialNetworkProfiles } from "@/services/social-networks.service";
 
 export const instant = false;
 
@@ -26,20 +27,27 @@ export default async function HomePage() {
     servicesResponse,
     projectsResponse,
     certificationsResponse,
+    socialNetworksResponse,
   ] = await Promise.all([
     getHome(),
     getCompany(),
     getServices(),
-    getProjects(),
+    getProjects(1, 4),
     getCertifications(),
+    getSocialNetworkProfiles(),
   ]);
 
   const home = homeResponse.data;
+
   const company = companyResponse.data;
+
   const services = servicesResponse.data.data;
+
   const projects = projectsResponse.data.data;
-  const certifications =
-    certificationsResponse.data.data;
+
+  const certifications = certificationsResponse.data.data;
+
+  const socialNetworks = socialNetworksResponse.data;
 
   return (
     <>
@@ -68,7 +76,9 @@ export default async function HomePage() {
           certifications={certifications}
         />
 
-        <ContactSection />
+        <ContactSection
+          socialNetworks={socialNetworks}
+        />
 
         <Footer
           certifications={certifications}
