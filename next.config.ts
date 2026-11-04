@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
           "hebbkx1anhila5yf.public.blob.vercel-storage.com",
       },
       {
+        protocol: "https",
+        hostname: "api.constructoracimas.com",
+        pathname: "/storage/**",
+      },
+      {
         protocol: "http",
         hostname: "209.145.55.109",
         port: "8000",
