@@ -13,14 +13,20 @@ export function HeroSection({
   data,
   children,
 }: HeroSectionProps) {
-  const heroImage =
-    data.images?.[0]?.file_url ?? null;
+  const heroImage = data.images?.[0]?.file_url ?? null;
+
+  const renderTitle = (title: string) => {
+    return title.split(/(construye)/gi).map((part, index) =>
+      part.toLowerCase() === "construye" ? (
+        <em key={index}>{part}</em>
+      ) : (
+        <span key={index}>{part}</span>
+      )
+    );
+  };
 
   return (
-    <section
-      className="hero"
-      id="inicio"
-    >
+    <section className="hero" id="inicio">
       {children}
 
       <div
@@ -30,10 +36,10 @@ export function HeroSection({
         style={
           heroImage
             ? {
-                backgroundImage: `url(${heroImage})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }
+              backgroundImage: `url("${heroImage}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }
             : undefined
         }
       >
@@ -48,9 +54,7 @@ export function HeroSection({
           </p>
 
           <h1>
-            Ingeniería que{" "}
-            <em>construye</em>{" "}
-            confianza.
+            {renderTitle(data.title)}
           </h1>
 
           <p className="hero-text">
@@ -63,7 +67,6 @@ export function HeroSection({
               href="#servicios"
             >
               Conoce nuestros servicios
-
               <ArrowUpRight size={17} />
             </a>
 
