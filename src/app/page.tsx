@@ -82,6 +82,7 @@ export default async function HomePage() {
 
         <Footer
           certifications={certifications}
+          socialNetworks={socialNetworks}
         />
       </main>
     </>

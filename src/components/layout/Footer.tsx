@@ -4,9 +4,10 @@ import Image from "next/image";
 import {
   ArrowUpRight,
   FileText,
-  Globe,
+  Globe2,
   Mail,
   MapPin,
+  MessageCircle,
   Phone,
 } from "lucide-react";
 
@@ -37,6 +38,10 @@ const footerLinks = [
     label: "Certificaciones",
     href: "/#certificaciones",
   },
+  {
+    label: "Contacto",
+    href: "/contacto#formulario",
+  },
 ];
 
 interface FooterProps {
@@ -60,36 +65,38 @@ const getDisplayText = (
 const getSocialHref = (
   profile: SocialNetworkProfile
 ): string | null => {
-  const value = profile.url?.trim();
-
-  if (!value) {
-    return null;
-  }
-
-  if (isExternalUrl(value)) {
-    return value;
-  }
-
-  if (/^(mailto:|tel:)/i.test(value)) {
-    return value;
-  }
-
   const name = normalizeName(
     profile.social_network_name
   );
 
+  const value = profile.url?.trim() ?? "";
+
+  const nickname = profile.nickname?.trim() ?? "";
+
+  if (value && isExternalUrl(value)) {
+    return value;
+  }
+
+  if (value && /^(mailto:|tel:)/i.test(value)) {
+    return value;
+  }
+
   if (name === "email") {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-      ? `mailto:${value}`
+    const email = value || nickname;
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ? `mailto:${email}`
       : null;
   }
 
   if (name === "whatsapp") {
-    if (!/^\+?[\d\s()-]+$/.test(value)) {
+    const candidate = value || nickname;
+
+    if (!/^\+?[\d\s()-]+$/.test(candidate)) {
       return null;
     }
 
-    const phone = value.replace(/\D/g, "");
+    const phone = candidate.replace(/\D/g, "");
 
     return phone
       ? `https://wa.me/${phone}`
@@ -100,9 +107,13 @@ const getSocialHref = (
     name === "telefono" ||
     name === "teléfono"
   ) {
-    return /^\+?[\d\s()-]+$/.test(value)
-      ? `tel:${value.replace(/[^\d+]/g, "")}`
-      : null;
+    const candidate = value || nickname;
+
+    if (!/^\+?[\d\s()-]+$/.test(candidate)) {
+      return null;
+    }
+
+    return `tel:${candidate.replace(/[^\d+]/g, "")}`;
   }
 
   return null;
@@ -115,41 +126,36 @@ function FooterSocialIcon({
   profile: SocialNetworkProfile;
   size?: number;
 }) {
-  if (profile.social_network_icon) {
-    return (
-      <Image
-        src={profile.social_network_icon}
-        alt=""
-        width={size}
-        height={size}
-        unoptimized
-        className="shrink-0 object-contain"
-      />
-    );
-  }
-
   const name = normalizeName(
     profile.social_network_name
   );
 
+  const iconProps = {
+    size,
+    strokeWidth: 1.7,
+    className: "shrink-0",
+  };
+
   switch (name) {
     case "email":
-      return <Mail size={size} />;
+      return <Mail {...iconProps} />;
 
     case "whatsapp":
+      return <MessageCircle {...iconProps} />;
+
     case "telefono":
     case "teléfono":
-      return <Phone size={size} />;
+      return <Phone {...iconProps} />;
 
     case "direccion":
     case "dirección":
-      return <MapPin size={size} />;
+      return <MapPin {...iconProps} />;
 
     case "ruc":
-      return <FileText size={size} />;
+      return <FileText {...iconProps} />;
 
     default:
-      return <Globe size={size} />;
+      return <Globe2 {...iconProps} />;
   }
 }
 
@@ -160,9 +166,7 @@ export function Footer({
   const getProfile = (name: string) =>
     socialNetworks.find(
       (profile) =>
-        normalizeName(
-          profile.social_network_name
-        ) === name
+        normalizeName(profile.social_network_name) === name
     );
 
   const emailProfile = getProfile("email");
@@ -181,14 +185,14 @@ export function Footer({
 
   const contactProfiles = [
     emailProfile,
-    whatsappProfile,
     phoneProfile,
+    whatsappProfile,
   ].filter(
     (profile): profile is SocialNetworkProfile =>
       profile !== undefined
   );
 
-  const otherProfiles = socialNetworks.filter(
+  const additionalProfiles = socialNetworks.filter(
     (profile) =>
       ![
         "email",
@@ -265,8 +269,12 @@ export function Footer({
           </p>
 
           <div className="footer-contact-list">
+            {/* EMAIL, TELÉFONO Y WHATSAPP */}
             {contactProfiles.map((profile, index) => {
               const href = getSocialHref(profile);
+              const external = href
+                ? isExternalUrl(href)
+                : false;
 
               if (!href) {
                 return (
@@ -281,8 +289,6 @@ export function Footer({
                   </div>
                 );
               }
-
-              const external = isExternalUrl(href);
 
               return (
                 <a
@@ -304,6 +310,7 @@ export function Footer({
               );
             })}
 
+            {/* DIRECCIÓN */}
             {addressProfile && (
               <div>
                 <FooterSocialIcon
@@ -318,14 +325,14 @@ export function Footer({
           </div>
 
           {/* OTRAS REDES SOCIALES */}
-          {otherProfiles.length > 0 && (
+          {additionalProfiles.length > 0 && (
             <div className="mt-6">
               <p className="footer-heading">
                 Síguenos
               </p>
 
               <div className="flex flex-wrap gap-3">
-                {otherProfiles.map((profile, index) => {
+                {additionalProfiles.map((profile, index) => {
                   const href = getSocialHref(profile);
 
                   if (!href) {
@@ -385,6 +392,7 @@ export function Footer({
             </p>
           )}
 
+          {/* RUC */}
           {rucProfile && (
             <p className="footer-ruc">
               RUC {rucProfile.nickname}
