@@ -16,8 +16,7 @@ import {
 } from "@/constants/site";
 
 export function Navbar() {
-  const pathname =
-    usePathname();
+  const pathname = usePathname();
 
   const getHomeSectionHref = (
     section: string
@@ -32,15 +31,11 @@ export function Navbar() {
   const navigation = [
     {
       label: "Nosotros",
-      href: getHomeSectionHref(
-        "nosotros"
-      ),
+      href: getHomeSectionHref("nosotros"),
     },
     {
       label: "Servicios",
-      href: getHomeSectionHref(
-        "servicios"
-      ),
+      href: getHomeSectionHref("servicios"),
     },
     {
       label: "Proyectos",
@@ -48,9 +43,7 @@ export function Navbar() {
     },
     {
       label: "Certificaciones",
-      href: getHomeSectionHref(
-        "certificaciones"
-      ),
+      href: getHomeSectionHref("certificaciones"),
     },
   ];
 
@@ -65,12 +58,8 @@ export function Navbar() {
         aria-label="Ir al inicio"
       >
         <Image
-          src={
-            SITE_CONFIG.logo.negative
-          }
-          alt={
-            SITE_CONFIG.shortName
-          }
+          src={SITE_CONFIG.logo.negative}
+          alt={SITE_CONFIG.shortName}
           width={210}
           height={70}
           className="brand-logo"
@@ -80,36 +69,24 @@ export function Navbar() {
 
       {/* NAVEGACIÓN */}
       <div className="nav-links">
-        {navigation.map(
-          (item) => (
-            <a
-              key={
-                item.label
-              }
-              href={
-                item.href
-              }
-            >
-              {
-                item.label
-              }
-            </a>
-          )
-        )}
+        {navigation.map((item) => (
+          <a
+            key={item.label}
+            href={item.href}
+          >
+            {item.label}
+          </a>
+        ))}
       </div>
 
-      {/* CTA */}
+      {/* CTA: FORMULARIO DE CONTACTO */}
       <a
         className="nav-cta"
-        href={getHomeSectionHref(
-          "contacto"
-        )}
+        href="/contacto#formulario"
       >
         Hablemos
 
-        <ArrowUpRight
-          size={16}
-        />
+        <ArrowUpRight size={16} />
       </a>
 
       {/* MENÚ MÓVIL */}
@@ -118,9 +95,7 @@ export function Navbar() {
         type="button"
         aria-label="Abrir menú de navegación"
       >
-        <Menu
-          size={22}
-        />
+        <Menu size={22} />
       </button>
     </nav>
   );

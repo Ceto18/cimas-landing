@@ -229,7 +229,7 @@ export function Footer({
 
           <a
             className="footer-cta"
-            href="/#contacto"
+            href="/contacto#formulario"
           >
             Conversemos sobre tu proyecto
 
