@@ -1,11 +1,11 @@
-import Image from "next/image";
 
 import {
   ArrowUpRight,
   FileText,
-  Globe,
+  Globe2,
   Mail,
   MapPin,
+  MessageCircle,
   Phone,
 } from "lucide-react";
 
@@ -34,45 +34,51 @@ const getSocialHref = (
   profile: SocialNetworkProfile
 ): string | null => {
   const value = profile.url?.trim();
-
-  if (!value) {
-    return null;
-  }
-
-  if (isExternalUrl(value)) {
-    return value;
-  }
-
-  if (/^(mailto:|tel:)/i.test(value)) {
-    return value;
-  }
-
   const name = normalizeName(
     profile.social_network_name
   );
 
+  if (value && isExternalUrl(value)) {
+    return value;
+  }
+
+  if (value && /^(mailto:|tel:)/i.test(value)) {
+    return value;
+  }
+
   if (name === "email") {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-      ? `mailto:${value}`
+    const email = value || profile.nickname;
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ? `mailto:${email}`
       : null;
   }
 
   if (name === "whatsapp") {
-    if (!/^\+?[\d\s()-]+$/.test(value)) {
+    const candidate = value || profile.nickname;
+
+    if (!/^\+?[\d\s()-]+$/.test(candidate)) {
       return null;
     }
 
-    const phone = value.replace(/\D/g, "");
+    const phone = candidate.replace(/\D/g, "");
 
     return phone
       ? `https://wa.me/${phone}`
       : null;
   }
 
-  if (name === "telefono" || name === "teléfono") {
-    return /^\+?[\d\s()-]+$/.test(value)
-      ? `tel:${value.replace(/[^\d+]/g, "")}`
-      : null;
+  if (
+    name === "telefono" ||
+    name === "teléfono"
+  ) {
+    const candidate = value || profile.nickname;
+
+    if (!/^\+?[\d\s()-]+$/.test(candidate)) {
+      return null;
+    }
+
+    return `tel:${candidate.replace(/[^\d+]/g, "")}`;
   }
 
   return null;
@@ -85,41 +91,36 @@ function SocialIcon({
   profile: SocialNetworkProfile;
   size?: number;
 }) {
-  if (profile.social_network_icon) {
-    return (
-      <Image
-        src={profile.social_network_icon}
-        alt=""
-        width={size}
-        height={size}
-        unoptimized
-        className="shrink-0 object-contain"
-      />
-    );
-  }
-
   const name = normalizeName(
     profile.social_network_name
   );
 
+  const iconProps = {
+    size,
+    strokeWidth: 1.7,
+    className: "shrink-0",
+  };
+
   switch (name) {
     case "email":
-      return <Mail size={size} />;
+      return <Mail {...iconProps} />;
 
     case "whatsapp":
+      return <MessageCircle {...iconProps} />;
+
     case "telefono":
     case "teléfono":
-      return <Phone size={size} />;
+      return <Phone {...iconProps} />;
 
     case "dirección":
     case "direccion":
-      return <MapPin size={size} />;
+      return <MapPin {...iconProps} />;
 
     case "ruc":
-      return <FileText size={size} />;
+      return <FileText {...iconProps} />;
 
     default:
-      return <Globe size={size} />;
+      return <Globe2 {...iconProps} />;
   }
 }
 
@@ -134,14 +135,22 @@ export function ContactSection({
     );
 
   const emailProfile = getProfile("email");
+
   const whatsappProfile = getProfile("whatsapp");
+
+  const phoneProfile =
+    getProfile("teléfono") ??
+    getProfile("telefono");
+
   const addressProfile =
     getProfile("dirección") ??
     getProfile("direccion");
+
   const rucProfile = getProfile("ruc");
 
   const primaryProfiles = [
     emailProfile,
+    phoneProfile,
     whatsappProfile,
   ].filter(
     (profile): profile is SocialNetworkProfile =>
@@ -153,6 +162,8 @@ export function ContactSection({
       ![
         "email",
         "whatsapp",
+        "telefono",
+        "teléfono",
         "dirección",
         "direccion",
         "ruc",
@@ -164,6 +175,7 @@ export function ContactSection({
   const contactHref =
     (emailProfile && getSocialHref(emailProfile)) ||
     (whatsappProfile && getSocialHref(whatsappProfile)) ||
+    (phoneProfile && getSocialHref(phoneProfile)) ||
     null;
 
   return (
@@ -172,6 +184,7 @@ export function ContactSection({
       id="contacto"
     >
       <div className="container contact-grid">
+        {/* INFORMACIÓN PRINCIPAL */}
         <div>
           <p className="eyebrow">
             <span />
@@ -191,9 +204,11 @@ export function ContactSection({
           </p>
         </div>
 
+        {/* TARJETA DE CONTACTO */}
         <div className="contact-card">
           <p>Contacto directo</p>
 
+          {/* EMAIL, TELÉFONO Y WHATSAPP */}
           {primaryProfiles.map((profile, index) => {
             const href = getSocialHref(profile);
 
@@ -218,7 +233,9 @@ export function ContactSection({
               <a
                 key={`${profile.social_network_name}-${index}`}
                 href={href}
-                target={external ? "_blank" : undefined}
+                target={
+                  external ? "_blank" : undefined
+                }
                 rel={
                   external
                     ? "noopener noreferrer"
@@ -234,24 +251,29 @@ export function ContactSection({
             );
           })}
 
+          {/* DIRECCIÓN */}
           {addressProfile && (
             <div className="address">
               <SocialIcon profile={addressProfile} />
 
-              <p>{getDisplayText(addressProfile)}</p>
+              <p>
+                {getDisplayText(addressProfile)}
+              </p>
             </div>
           )}
 
+          {/* RUC */}
           {rucProfile && (
             <div className="address">
               <SocialIcon profile={rucProfile} />
 
               <p>
-                RUC {getDisplayText(rucProfile)}
+                RUC {rucProfile.nickname}
               </p>
             </div>
           )}
 
+          {/* OTRAS REDES SOCIALES */}
           {additionalProfiles.length > 0 && (
             <div className="mt-6 border-t border-white/15 pt-5">
               <p className="mb-4 text-xs font-medium uppercase tracking-wider">
@@ -259,62 +281,53 @@ export function ContactSection({
               </p>
 
               <div className="flex flex-wrap gap-3">
-                {additionalProfiles.map((profile, index) => {
-                  const href = getSocialHref(profile);
+                {additionalProfiles.map(
+                  (profile, index) => {
+                    const href = getSocialHref(profile);
 
-                  if (!href) {
-                    return null;
+                    if (!href) {
+                      return null;
+                    }
+
+                    const external = isExternalUrl(href);
+
+                    return (
+                      <a
+                        key={`${profile.social_network_name}-${index}`}
+                        href={href}
+                        target={
+                          external ? "_blank" : undefined
+                        }
+                        rel={
+                          external
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                        title={getDisplayText(profile)}
+                        aria-label={`Visitar ${profile.social_network_name}`}
+                        className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 bg-white/5 transition-all duration-300 hover:-translate-y-1 hover:border-white/50 hover:bg-white/15"
+                      >
+                        <SocialIcon
+                          profile={profile}
+                          size={22}
+                        />
+                      </a>
+                    );
                   }
-
-                  return (
-                    <a
-                      key={`${profile.social_network_name}-${index}`}
-                      href={href}
-                      target={
-                        isExternalUrl(href)
-                          ? "_blank"
-                          : undefined
-                      }
-                      rel={
-                        isExternalUrl(href)
-                          ? "noopener noreferrer"
-                          : undefined
-                      }
-                      title={getDisplayText(profile)}
-                      aria-label={`Visitar ${profile.social_network_name}`}
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 bg-white/5 transition-all duration-300 hover:-translate-y-1 hover:border-white/50 hover:bg-white/15"
-                    >
-                      <SocialIcon
-                        profile={profile}
-                        size={22}
-                      />
-                    </a>
-                  );
-                })}
+                )}
               </div>
             </div>
           )}
 
-          {contactHref && (
-            <a
-              className="button button-dark"
-              href={contactHref}
-              target={
-                isExternalUrl(contactHref)
-                  ? "_blank"
-                  : undefined
-              }
-              rel={
-                isExternalUrl(contactHref)
-                  ? "noopener noreferrer"
-                  : undefined
-              }
-            >
-              Escríbenos
+          {/* BOTÓN DE CONTACTO */}
+          <a
+            className="button button-dark"
+            href="/contacto#formulario"
+          >
+            Escríbenos
 
-              <ArrowUpRight size={17} />
-            </a>
-          )}
+            <ArrowUpRight size={17} />
+          </a>
         </div>
       </div>
     </section>
